@@ -2,102 +2,15 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { answerQuestion, starterPrompts, knowledgeBase } from './lib/rag.js';
 
 const brandLogoUrl = 'https://static.wixstatic.com/media/cc1f3a_760dc06313af4c13af4bac3b41b602a6~mv2.png/v1/fill/w_312,h_72,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Primary%20logo%20(full%20color)_edited.png';
-const brandHeroUrl = 'https://static.wixstatic.com/media/cc1f3a_bc960c66bae748019bce063f50bf9751~mv2.png/v1/fill/w_955,h_887,al_c,q_90,enc_avif,quality_auto/410f33aa-1c55-48b2-9ae5-9afdc4071b0f_edi.png';
-
-const tabs = [
-  { id: 'ai', label: 'AI Chat', detail: 'Ask the assistant first' },
-  { id: 'network', label: 'Network', detail: 'Workflow and stats' },
-  { id: 'evidence', label: 'Evidence', detail: 'Sources and trace' },
-];
-
-const pipeline = [
-  { label: 'Inspect', detail: 'vehicle-mounted imagery' },
-  { label: 'Detect', detail: 'cracks, potholes, assets' },
-  { label: 'Score', detail: 'PCI by road segment' },
-  { label: 'Ground', detail: 'GDOT + city guidance' },
-  { label: 'Prioritize', detail: 'cost-aware rehab' },
-];
-
-const operationalBullets = [
-  'Captures road imagery using a vehicle-mounted inspection workflow.',
-  'Detects defects such as cracks, potholes, patching, and manhole covers.',
-  'Rolls image-level detections into segment-level PCI and defect summaries.',
-  'Supports maintenance planning with engineering guides, historical reports, and cost data.',
-];
 
 const initialMessages = [
   {
     id: 'welcome',
     role: 'assistant',
-    text:
-      'PavePal is an AI-powered road and asset intelligence platform. It uses vehicle-mounted computer vision to detect pavement defects, score road segments with PCI, and support maintenance planning with evidence from city reports and engineering guidance.',
+    text: 'PavePal is an AI-powered road and asset intelligence platform. It uses vehicle-mounted computer vision to detect pavement defects, score road segments with PCI, and support maintenance planning with evidence from city reports and engineering guidance.',
     citations: ['company-overview', 'project-scope'],
   },
 ];
-
-const dashboardStats = [
-  { label: 'Road segments', value: '1,960', detail: 'City inventory in scope' },
-  { label: 'Scanned images', value: '20,829', detail: 'CV detections from field runs' },
-  { label: 'Knowledge chunks', value: String(knowledgeBase.length), detail: 'Local retrieval corpus' },
-];
-
-function MetricTile({ label, value, detail }) {
-  return (
-    <article className="metric-card">
-      <span>{label}</span>
-      <strong>{value}</strong>
-      <p>{detail}</p>
-    </article>
-  );
-}
-
-function TabButton({ tab, isActive, onClick }) {
-  return (
-    <button
-      className={`tab-button ${isActive ? 'active' : ''}`}
-      type="button"
-      role="tab"
-      aria-selected={isActive}
-      onClick={onClick}
-    >
-      <strong>{tab.label}</strong>
-      <span>{tab.detail}</span>
-    </button>
-  );
-}
-
-function PipelinePill({ step }) {
-  return (
-    <div className="pipeline-pill">
-      <strong>{step.label}</strong>
-      <span>{step.detail}</span>
-    </div>
-  );
-}
-
-function SourceCard({ source }) {
-  return (
-    <article className="source-card">
-      <div className="source-topline">
-        <span>{source.id}</span>
-        <span>{source.score}</span>
-      </div>
-      <h3>{source.title}</h3>
-      <p>{source.summary}</p>
-      <p className="source-reason">{source.reason}</p>
-    </article>
-  );
-}
-
-function KnowledgeCard({ title, summary, detail }) {
-  return (
-    <article className="knowledge-card">
-      <p className="knowledge-label">{detail}</p>
-      <h3>{title}</h3>
-      <p>{summary}</p>
-    </article>
-  );
-}
 
 function ChatBubble({ message }) {
   const roleLabel = message.role === 'assistant' ? 'Assistant' : 'You';
@@ -123,22 +36,30 @@ function ChatBubble({ message }) {
   );
 }
 
+function SourceCard({ source }) {
+  return (
+    <article className="source-card">
+      <div className="source-topline">
+        <span>{source.id}</span>
+        <span>{source.score}</span>
+      </div>
+      <h3>{source.title}</h3>
+      <p>{source.summary}</p>
+      <p className="source-reason">{source.reason}</p>
+    </article>
+  );
+}
+
 function App() {
   const [messages, setMessages] = useState(initialMessages);
-  const [input, setInput] = useState(starterPrompts[0]);
+  const [input, setInput] = useState('');
   const [lastResponse, setLastResponse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('ai');
   const endRef = useRef(null);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
-
-  const latestAssistantMessage = useMemo(
-    () => [...messages].reverse().find((message) => message.role === 'assistant'),
-    [messages],
-  );
 
   const previewSources =
     lastResponse?.sources ??
@@ -165,7 +86,6 @@ function App() {
     setInput('');
     setMessages((current) => [...current, nextUserMessage]);
     setIsLoading(true);
-    setActiveTab('ai');
 
     try {
       const response = await answerQuestion(trimmed);
@@ -187,34 +107,19 @@ function App() {
 
   return (
     <div className="app-shell">
-      <div className="ambient ambient-a" />
-      <div className="ambient ambient-b" />
-
       <header className="topbar">
         <div className="brand-lockup">
           <img className="brand-logo" src={brandLogoUrl} alt="PavePal logo" />
           <div className="brand-copy-block compact">
             <p className="brand-kicker">AI-Powered Road & Asset Intelligence</p>
             <p className="brand-subcopy">
-              Transform geo-tagged roadway imagery into structured, location-accurate road
-              condition insights.
+              Ask the AI about road inspection, pavement condition, defects, and rehab planning.
             </p>
           </div>
         </div>
-
-        <div className="tab-strip" role="tablist" aria-label="Dashboard sections">
-          {tabs.map((tab) => (
-            <TabButton
-              key={tab.id}
-              tab={tab}
-              isActive={activeTab === tab.id}
-              onClick={() => setActiveTab(tab.id)}
-            />
-          ))}
-        </div>
       </header>
 
-      <section className="workspace" aria-label="PavePal dashboard workspace">
+      <section className="workspace" aria-label="PavePal AI chat workspace">
         <section className="chat-panel panel-card">
           <div className="panel-header">
             <div>
@@ -269,115 +174,20 @@ function App() {
           </form>
         </section>
 
-        <aside className="workspace-panel">
-          {activeTab === 'ai' ? (
-            <section className="brand-card panel-card">
-              <img className="brand-hero-image" src={brandHeroUrl} alt="PavePal brand artwork" />
-              <div className="brand-copy-block">
-                <p className="section-label">PavePal theme</p>
-                <h2>Road intelligence, made conversational.</h2>
-                <p className="hero-copy">
-                  AI-powered platform for road condition monitoring, defect detection, and
-                  infrastructure asset insights.
-                </p>
+        <aside className="workspace-panel panel-card">
+          <section className="info-card">
+            <div className="panel-header compact">
+              <div>
+                <p className="section-label">Retrieval trace</p>
+                <h2>Answer context & evidence</h2>
               </div>
-              <div className="hero-stats compact-grid">
-                {dashboardStats.map((stat) => (
-                  <MetricTile key={stat.label} {...stat} />
-                ))}
-              </div>
-              <div className="signal-card">
-                <span>Current mode</span>
-                <strong>{lastResponse?.mode ?? 'overview'}</strong>
-                <p>
-                  {lastResponse
-                    ? lastResponse.provider === 'claude'
-                      ? `Answered by ${lastResponse.modelName ?? 'Claude'}. Confidence: ${lastResponse.confidence}.`
-                      : `Using fallback retrieval. Confidence: ${lastResponse.confidence}.`
-                    : 'Ready to query Claude API or the fallback knowledge base.'}
-                </p>
-              </div>
-            </section>
-          ) : null}
-
-          {activeTab === 'network' ? (
-            <section className="panel-stack">
-              <section className="info-card panel-card">
-                <div className="panel-header compact">
-                  <div>
-                    <p className="section-label">What PavePal does</p>
-                    <h2>Operational overview</h2>
-                  </div>
-                </div>
-                <ul className="bullet-list">
-                  {operationalBullets.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </section>
-
-              <section className="info-card panel-card">
-                <div className="panel-header compact">
-                  <div>
-                    <p className="section-label">From imagery to action</p>
-                    <h2>Workflow pipeline</h2>
-                  </div>
-                </div>
-                <div className="pipeline-row">
-                  {pipeline.map((step) => (
-                    <PipelinePill key={step.label} step={step} />
-                  ))}
-                </div>
-              </section>
-            </section>
-          ) : null}
-
-          {activeTab === 'evidence' ? (
-            <section className="panel-stack">
-              <section className="info-card panel-card">
-                <div className="panel-header compact">
-                  <div>
-                    <p className="section-label">Retrieval trace</p>
-                    <h2>Answer context</h2>
-                  </div>
-                </div>
-                <div className="trace-summary">
-                  <div>
-                    <span>Follow-up</span>
-                    <strong>{lastResponse?.followUp ?? 'Ask a question to see a grounded answer.'}</strong>
-                  </div>
-                  <div>
-                    <span>Latest answer</span>
-                    <strong>{latestAssistantMessage?.text ?? 'Waiting for the next prompt.'}</strong>
-                  </div>
-                </div>
-                <div className="source-list">
-                  {previewSources?.map((source) => (
-                    <SourceCard key={source.id} source={source} />
-                  ))}
-                </div>
-              </section>
-
-              <section className="info-card panel-card">
-                <div className="panel-header compact">
-                  <div>
-                    <p className="section-label">Knowledge base</p>
-                    <h2>Curated dummy corpus</h2>
-                  </div>
-                </div>
-                <div className="knowledge-grid">
-                  {knowledgeBase.map((source) => (
-                    <KnowledgeCard
-                      key={source.id}
-                      title={source.title}
-                      summary={source.summary}
-                      detail={source.category}
-                    />
-                  ))}
-                </div>
-              </section>
-            </section>
-          ) : null}
+            </div>
+            <div className="source-list">
+              {previewSources?.map((source) => (
+                <SourceCard key={source.id} source={source} />
+              ))}
+            </div>
+          </section>
         </aside>
       </section>
     </div>
