@@ -1,10 +1,14 @@
 import { knowledgeBase, starterPrompts, type KnowledgeChunk } from './knowledgeBase';
 
+export type AnswerMode = 'overview' | 'retrieval' | 'guide' | 'cost' | 'fallback';
+export type ConfidenceLevel = 'high' | 'medium' | 'low';
+
 export interface RetrievedSource {
   id: string;
   title: string;
   summary: string;
   score: number;
+  reason: string;
 }
 
 export interface ChatMessageModel {
@@ -13,6 +17,15 @@ export interface ChatMessageModel {
   text: string;
   citations?: string[];
   sources?: RetrievedSource[];
+}
+
+export interface AssistantResponse {
+  answer: string;
+  citations: string[];
+  sources: RetrievedSource[];
+  mode: AnswerMode;
+  confidence: ConfidenceLevel;
+  followUp: string;
 }
 
 export { starterPrompts };
@@ -77,25 +90,81 @@ function scoreChunk(question: string, chunk: KnowledgeChunk) {
     score += 10;
   }
 
-  if (joinedQuestion.includes('data') || joinedQuestion.includes('source')) {
+  if (joinedQuestion.includes('data') || joinedQuestion.includes('source') || joinedQuestion.includes('retrieval')) {
     if (chunk.category === 'data' || chunk.category === 'project') {
       score += 4;
     }
   }
 
-  if (joinedQuestion.includes('guide') || joinedQuestion.includes('recommend')) {
+  if (joinedQuestion.includes('guide') || joinedQuestion.includes('recommend') || joinedQuestion.includes('repair')) {
     if (chunk.category === 'guide' || chunk.category === 'cost') {
       score += 4;
     }
   }
 
-  if (joinedQuestion.includes('cost') || joinedQuestion.includes('price')) {
+  if (joinedQuestion.includes('cost') || joinedQuestion.includes('price') || joinedQuestion.includes('cheap')) {
     if (chunk.category === 'cost') {
       score += 5;
     }
   }
 
+  if (joinedQuestion.includes('pci') || joinedQuestion.includes('segment') || joinedQuestion.includes('defect')) {
+    if (chunk.category === 'data' || chunk.category === 'cost') {
+      score += 4;
+    }
+  }
+
   return score;
+}
+
+function classifyMode(question: string): AnswerMode {
+  const normalized = normalize(question);
+
+  if (normalized.includes('what is pavepal') || normalized.includes('what does pavepal do')) {
+    return 'overview';
+  }
+
+  if (normalized.includes('data') || normalized.includes('source') || normalized.includes('retrieval')) {
+    return 'retrieval';
+  }
+
+  if (normalized.includes('guide') || normalized.includes('recommend') || normalized.includes('repair')) {
+    return 'guide';
+  }
+
+  if (normalized.includes('cost') || normalized.includes('price') || normalized.includes('cheap')) {
+    return 'cost';
+  }
+
+  return 'fallback';
+}
+
+function describeReason(question: string, chunk: KnowledgeChunk) {
+  const normalized = normalize(question);
+
+  if (chunk.id === 'company-overview') {
+    return 'Defines PavePal as a computer-vision road assessment platform.';
+  }
+
+  if (chunk.id === 'project-scope') {
+    return 'Explains the capstone goal of measuring retrieval quality and failure modes.';
+  }
+
+  if (chunk.id === 'inspection-data') {
+    return normalized.includes('pci') || normalized.includes('defect')
+      ? 'Connects the chat to segment PCI and defect detections.'
+      : 'Provides the road inventory and defect taxonomy used by the demo.';
+  }
+
+  if (chunk.id === 'gdot-guide') {
+    return 'Acts as the engineering rule book for treatment selection and grounding.';
+  }
+
+  if (chunk.id === 'rehab-activities') {
+    return 'Supplies the PCI band-to-repair and cost mapping for cheapest-repair questions.';
+  }
+
+  return 'Relevant to the question terms and the local PavePal scope.';
 }
 
 function rankSources(question: string) {
@@ -112,6 +181,7 @@ function rankSources(question: string) {
       title: chunk.title,
       summary: chunk.summary,
       score,
+      reason: describeReason(question, chunk),
     }));
 }
 
@@ -161,13 +231,50 @@ function buildAnswer(question: string, sources: RetrievedSource[]) {
   return `The strongest local evidence points to ${lead.title}. ${lead.summary} The assistant should use that evidence together with the other retrieved sources to answer the question in a grounded way.`;
 }
 
-export function answerQuestion(question: string) {
+function determineConfidence(sources: RetrievedSource[], question: string): ConfidenceLevel {
+  const normalized = normalize(question);
+
+  if (normalized.includes('what is pavepal') || normalized.includes('what does pavepal do')) {
+    return 'high';
+  }
+
+  if (sources.length >= 2 && sources[0]?.score >= 10) {
+    return 'high';
+  }
+
+  if (sources.length === 1 || sources[0]?.score >= 5) {
+    return 'medium';
+  }
+
+  return 'low';
+}
+
+function buildFollowUp(mode: AnswerMode) {
+  switch (mode) {
+    case 'overview':
+      return 'Ask about the data sources, PCI scoring, or the GDOT guide next.';
+    case 'retrieval':
+      return 'Try a question about road segments, defects, or the evidence trail.';
+    case 'guide':
+      return 'Ask for the cheapest acceptable rehab or a repair recommendation.';
+    case 'cost':
+      return 'Ask what treatment a specific PCI band should trigger.';
+    default:
+      return 'Try a more specific question about PavePal, PCI, or maintenance guidance.';
+  }
+}
+
+export function answerQuestion(question: string): AssistantResponse {
   const sources = rankSources(question);
   const citations = sources.map((source) => source.id);
+  const mode = classifyMode(question);
 
   return {
     answer: buildAnswer(question, sources),
     citations,
     sources,
+    mode,
+    confidence: determineConfidence(sources, question),
+    followUp: buildFollowUp(mode),
   };
 }
