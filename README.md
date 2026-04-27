@@ -1,10 +1,14 @@
 # PavePal RAG Dashboard
 
-Local Vite + React prototype for a retrieval-augmented PavePal dashboard that can answer with Claude API.
+A green and white themed Vite + React AI chatbot for PavePal that answers questions using Claude API with local fallback retrieval.
 
 ## What it does
 
-The dashboard explains what PavePal is, what it does, and how a chat assistant can ground answers in a small curated knowledge base. If a Claude API key is available, the assistant will call Claude; otherwise it falls back to deterministic retrieval.
+- **AI Chat Interface** — Ask questions about PavePal, road inspection, pavement condition, and maintenance planning
+- **Claude API Integration** — Real AI responses powered by Anthropic's Claude model
+- **Local Fallback** — Deterministic retrieval from knowledge base when no API key is available
+- **Evidence Display** — Shows sources and retrieval context for every answer
+- **Green & White Theme** — Clean, professional light-mode interface with green accent colors
 
 ## Run it
 
@@ -13,25 +17,32 @@ npm install
 npm run dev
 ```
 
-Then open the local Vite URL shown in the terminal.
+Open the URL shown in the terminal (typically http://localhost:5173/).
 
-## Configure Claude
+## Configure Claude API
 
-Copy `.env.example` to `.env` and add your key:
+To enable real AI responses:
+
+1. Copy `.env.example` to `.env`
+2. Add your Anthropic API key:
 
 ```bash
-VITE_ANTHROPIC_API_KEY=your_api_key_here
+VITE_ANTHROPIC_API_KEY=sk-ant-your_key_here
 VITE_ANTHROPIC_MODEL=claude-3-5-sonnet-latest
 VITE_ANTHROPIC_BASE_URL=https://api.anthropic.com
 ```
 
-## Build it
+Get an API key at [console.anthropic.com](https://console.anthropic.com).
+
+## Build for production
 
 ```bash
 npm run build
 ```
 
-## Preview the production build
+Output is in `dist/`.
+
+## Preview production build
 
 ```bash
 npm run preview
@@ -39,14 +50,47 @@ npm run preview
 
 ## Project structure
 
-- `docs/` contains the project briefing and kickstart markdown files.
-- `src/App.jsx` contains the dashboard and chat UI.
-- `src/lib/rag.js` contains the local retrieval, Claude request, and answer logic.
-- `src/styles.css` contains the visual system for the dashboard.
+- `docs/` — Project documentation and briefing materials
+- `src/App.jsx` — Main dashboard and chat UI component
+- `src/lib/rag.js` — RAG logic: retrieval, Claude API calls, fallback retrieval
+- `src/styles.css` — Green and white visual design system
+- `src/main.jsx` — React entry point
+- `vite.config.js` — Vite build configuration
+- `.env.example` — Claude API configuration template
 
-## Notes
+## Features
 
-- The demo uses Claude when an API key is available and otherwise falls back to deterministic retrieval.
-- Because the API key is read from a Vite env var, this setup is only appropriate for local prototyping. Move the Claude call behind a server proxy before shipping.
-- The base query sent to the model is built in `src/lib/rag.js` inside `baseModelQuery(question, mode, sources)`, and the system prompt lives in `buildModelSystemPrompt()`.
-- The generated build output in `dist/` is ignored and should not be committed.
+### Chat Panel
+- Message bubbles with user (green) and assistant (light gray) styling
+- Suggested starter prompts for quick queries
+- Real-time thinking indicator while processing
+
+### Evidence Panel
+- Shows retrieval sources for each answer
+- Displays knowledge base chunks and confidence scores
+- Helps users understand the answer's context
+
+### Responsive Design
+- Desktop-optimized 2-column layout
+- Mobile-friendly single-column fallback
+- Smooth scrolling and animations
+
+## Technical notes
+
+- **Frontend only** — API key is in the browser; use a backend proxy before production
+- **System prompt** — Defined in `buildModelSystemPrompt()` in `src/lib/rag.js`
+- **Base query** — Built in `baseModelQuery(question, mode, sources)` 
+- **Knowledge base** — 5 dummy chunks in `src/lib/rag.js`
+- **No TypeScript** — Plain JavaScript/JSX for rapid prototyping
+- **Vite 6.4.2** — Fast dev server with hot module reload
+
+## Commits on feature branch
+
+The `feat/pavepal-rag-dashboard` branch includes:
+- App scaffold with Vite + React
+- RAG logic with local retrieval
+- Claude API integration with fallback
+- Pure JavaScript conversion (no TypeScript)
+- PavePal branding with green and white theme
+- Tabbed dashboard → simplified AI-first chat layout
+- Alignment and spacing refinements
