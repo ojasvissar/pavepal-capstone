@@ -39,6 +39,7 @@ npm run preview
 
 ## Project structure
 
+- `docs/` contains the project briefing and kickstart markdown files.
 - `src/App.jsx` contains the dashboard and chat UI.
 - `src/lib/rag.js` contains the local retrieval, Claude request, and answer logic.
 - `src/styles.css` contains the visual system for the dashboard.
