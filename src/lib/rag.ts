@@ -26,9 +26,14 @@ export interface AssistantResponse {
   mode: AnswerMode;
   confidence: ConfidenceLevel;
   followUp: string;
+  provider: 'ollama' | 'fallback';
+  modelName?: string;
 }
 
 export { starterPrompts };
+
+const defaultModelBaseUrl = (import.meta.env.VITE_PAVEPAL_MODEL_URL ?? 'http://localhost:11434').toString();
+const defaultModelName = (import.meta.env.VITE_PAVEPAL_MODEL_NAME ?? 'llama3.2').toString();
 
 const stopWords = new Set([
   'a',
@@ -264,17 +269,83 @@ function buildFollowUp(mode: AnswerMode) {
   }
 }
 
-export function answerQuestion(question: string): AssistantResponse {
+function buildModelSystemPrompt() {
+  return [
+    'You are the PavePal dashboard assistant.',
+    'Answer only from the supplied project context and retrieved evidence.',
+    'If the context is insufficient, say so clearly instead of inventing details.',
+    'Keep the response concise and practical.',
+    'When relevant, mention source ids like [company-overview] or [gdot-guide].',
+  ].join(' ');
+}
+
+function buildModelUserPrompt(question: string, mode: AnswerMode, sources: RetrievedSource[]) {
+  const contextBlock =
+    sources.length > 0
+      ? sources
+          .map(
+            (source) =>
+              `- [${source.id}] ${source.title}: ${source.summary} Evidence note: ${source.reason}`,
+          )
+          .join('\n')
+      : '- No strong local sources matched the question.';
+
+  return [
+    `Question: ${question}`,
+    `Mode: ${mode}`,
+    'Context:',
+    contextBlock,
+    'Write a grounded answer in 2 short paragraphs or fewer.',
+  ].join('\n');
+}
+
+async function callLocalModel(question: string, mode: AnswerMode, sources: RetrievedSource[]) {
+  try {
+    const response = await fetch(`${defaultModelBaseUrl.replace(/\/$/, '')}/api/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: defaultModelName,
+        stream: false,
+        messages: [
+          { role: 'system', content: buildModelSystemPrompt() },
+          { role: 'user', content: buildModelUserPrompt(question, mode, sources) },
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const payload = (await response.json()) as {
+      message?: {
+        content?: string;
+      };
+    };
+
+    return payload.message?.content?.trim() ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function answerQuestion(question: string): Promise<AssistantResponse> {
   const sources = rankSources(question);
   const citations = sources.map((source) => source.id);
   const mode = classifyMode(question);
+  const modelAnswer = await callLocalModel(question, mode, sources);
 
   return {
-    answer: buildAnswer(question, sources),
+    answer: modelAnswer ?? buildAnswer(question, sources),
     citations,
     sources,
     mode,
     confidence: determineConfidence(sources, question),
     followUp: buildFollowUp(mode),
+    provider: modelAnswer ? 'ollama' : 'fallback',
+    modelName: modelAnswer ? defaultModelName : undefined,
   };
 }

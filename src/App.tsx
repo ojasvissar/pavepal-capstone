@@ -109,6 +109,7 @@ function App() {
   const [messages, setMessages] = useState<ChatMessageModel[]>(initialMessages);
   const [input, setInput] = useState(starterPrompts[0]);
   const [lastResponse, setLastResponse] = useState<AssistantResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const endRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -128,9 +129,9 @@ function App() {
     reason: 'Sample evidence pulled from the curated demo corpus.',
   }));
 
-  function submitQuestion(question: string) {
+  async function submitQuestion(question: string) {
     const trimmed = question.trim();
-    if (!trimmed) {
+    if (!trimmed || isLoading) {
       return;
     }
 
@@ -140,19 +141,26 @@ function App() {
       text: trimmed,
     };
 
-    const response = answerQuestion(trimmed);
-    setLastResponse(response);
-
-    const nextAssistantMessage: ChatMessageModel = {
-      id: `assistant-${Date.now()}`,
-      role: 'assistant',
-      text: response.answer,
-      citations: response.citations,
-      sources: response.sources,
-    };
-
-    setMessages((current) => [...current, nextUserMessage, nextAssistantMessage]);
     setInput('');
+    setMessages((current) => [...current, nextUserMessage]);
+    setIsLoading(true);
+
+    try {
+      const response = await answerQuestion(trimmed);
+      setLastResponse(response);
+
+      const nextAssistantMessage: ChatMessageModel = {
+        id: `assistant-${Date.now()}`,
+        role: 'assistant',
+        text: response.answer,
+        citations: response.citations,
+        sources: response.sources,
+      };
+
+      setMessages((current) => [...current, nextAssistantMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -185,7 +193,13 @@ function App() {
           <div className="signal-card">
             <span>Current mode</span>
             <strong>{lastResponse?.mode ?? 'overview'}</strong>
-            <p>Confidence: {lastResponse?.confidence ?? 'high'}.</p>
+            <p>
+              {lastResponse
+                ? lastResponse.provider === 'ollama'
+                  ? `Answered by ${lastResponse.modelName ?? 'local model'}. Confidence: ${lastResponse.confidence}.`
+                  : `Using fallback retrieval. Confidence: ${lastResponse.confidence}.`
+                : 'Ready to query the local model or the fallback knowledge base.'}
+            </p>
           </div>
         </div>
       </header>
@@ -197,7 +211,7 @@ function App() {
               <p className="section-label">Assistant</p>
               <h2>RAG chat</h2>
             </div>
-            <div className="status-pill">Dummy data enabled</div>
+            <div className="status-pill">Local AI model ready</div>
           </div>
 
           <div className="messages" aria-live="polite">
@@ -223,17 +237,18 @@ function App() {
               onChange={(event) => setInput(event.target.value)}
               placeholder="Ask about PavePal, PCI, defects, or rehab recommendations..."
               rows={3}
+              disabled={isLoading}
             />
             <div className="composer-actions">
               <div className="prompt-list" aria-label="Suggested prompts">
                 {starterPrompts.map((prompt) => (
-                  <button key={prompt} type="button" onClick={() => submitQuestion(prompt)}>
+                  <button key={prompt} type="button" onClick={() => void submitQuestion(prompt)} disabled={isLoading}>
                     {prompt}
                   </button>
                 ))}
               </div>
-              <button className="send-button" type="submit">
-                Send
+              <button className="send-button" type="submit" disabled={isLoading}>
+                {isLoading ? 'Thinking...' : 'Send'}
               </button>
             </div>
           </form>
