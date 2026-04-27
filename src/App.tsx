@@ -195,10 +195,10 @@ function App() {
             <strong>{lastResponse?.mode ?? 'overview'}</strong>
             <p>
               {lastResponse
-                ? lastResponse.provider === 'ollama'
+                ? lastResponse.provider === 'claude'
                   ? `Answered by ${lastResponse.modelName ?? 'local model'}. Confidence: ${lastResponse.confidence}.`
                   : `Using fallback retrieval. Confidence: ${lastResponse.confidence}.`
-                : 'Ready to query the local model or the fallback knowledge base.'}
+                : 'Ready to query Claude API or the fallback knowledge base.'}
             </p>
           </div>
         </div>
@@ -211,7 +211,7 @@ function App() {
               <p className="section-label">Assistant</p>
               <h2>RAG chat</h2>
             </div>
-            <div className="status-pill">Local AI model ready</div>
+            <div className="status-pill">Claude API ready</div>
           </div>
 
           <div className="messages" aria-live="polite">

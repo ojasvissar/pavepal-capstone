@@ -1,10 +1,10 @@
 # PavePal RAG Dashboard
 
-Local Vite + React prototype for a retrieval-augmented PavePal dashboard that can answer with a real local AI model.
+Local Vite + React prototype for a retrieval-augmented PavePal dashboard that can answer with Claude API.
 
 ## What it does
 
-The dashboard explains what PavePal is, what it does, and how a chat assistant can ground answers in a small curated knowledge base. If Ollama is available, the assistant will call a real local model; otherwise it falls back to deterministic retrieval.
+The dashboard explains what PavePal is, what it does, and how a chat assistant can ground answers in a small curated knowledge base. If a Claude API key is available, the assistant will call Claude; otherwise it falls back to deterministic retrieval.
 
 ## Run it
 
@@ -15,20 +15,19 @@ npm run dev
 
 Then open the local Vite URL shown in the terminal.
 
-## Run the AI model
+## Configure Claude
 
-This project expects a local Ollama server at `http://localhost:11434`.
+This project expects a Claude API key in your environment.
 
 ```bash
-ollama pull llama3.2
-ollama serve
+VITE_ANTHROPIC_API_KEY=your_api_key_here
+VITE_ANTHROPIC_MODEL=claude-3-5-sonnet-latest
 ```
 
-If you want to point the app at a different Ollama endpoint or model, create a `.env` file with:
+You can also override the API base URL if needed:
 
 ```bash
-VITE_PAVEPAL_MODEL_URL=http://localhost:11434
-VITE_PAVEPAL_MODEL_NAME=llama3.2
+VITE_ANTHROPIC_BASE_URL=https://api.anthropic.com
 ```
 
 ## Build it
@@ -52,5 +51,6 @@ npm run preview
 
 ## Notes
 
-- The demo uses a real model when Ollama is available and otherwise falls back to deterministic retrieval.
+- The demo uses Claude when an API key is available and otherwise falls back to deterministic retrieval.
+- Because the API key is read from a Vite env var, this setup is only appropriate for local prototyping. Move the Claude call behind a server proxy before shipping.
 - The generated build output in `dist/` is ignored and should not be committed.

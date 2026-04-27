@@ -26,14 +26,15 @@ export interface AssistantResponse {
   mode: AnswerMode;
   confidence: ConfidenceLevel;
   followUp: string;
-  provider: 'ollama' | 'fallback';
+  provider: 'claude' | 'fallback';
   modelName?: string;
 }
 
 export { starterPrompts };
 
-const defaultModelBaseUrl = (import.meta.env.VITE_PAVEPAL_MODEL_URL ?? 'http://localhost:11434').toString();
-const defaultModelName = (import.meta.env.VITE_PAVEPAL_MODEL_NAME ?? 'llama3.2').toString();
+const defaultAnthropicApiKey = (import.meta.env.VITE_ANTHROPIC_API_KEY ?? '').toString().trim();
+const defaultAnthropicModel = (import.meta.env.VITE_ANTHROPIC_MODEL ?? 'claude-3-5-sonnet-latest').toString();
+const defaultAnthropicBaseUrl = (import.meta.env.VITE_ANTHROPIC_BASE_URL ?? 'https://api.anthropic.com').toString();
 
 const stopWords = new Set([
   'a',
@@ -299,20 +300,24 @@ function buildModelUserPrompt(question: string, mode: AnswerMode, sources: Retri
   ].join('\n');
 }
 
-async function callLocalModel(question: string, mode: AnswerMode, sources: RetrievedSource[]) {
+async function callClaudeModel(question: string, mode: AnswerMode, sources: RetrievedSource[]) {
+  if (!defaultAnthropicApiKey) {
+    return null;
+  }
+
   try {
-    const response = await fetch(`${defaultModelBaseUrl.replace(/\/$/, '')}/api/chat`, {
+    const response = await fetch(`${defaultAnthropicBaseUrl.replace(/\/$/, '')}/v1/messages`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'x-api-key': defaultAnthropicApiKey,
+        'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: defaultModelName,
-        stream: false,
-        messages: [
-          { role: 'system', content: buildModelSystemPrompt() },
-          { role: 'user', content: buildModelUserPrompt(question, mode, sources) },
-        ],
+        model: defaultAnthropicModel,
+        max_tokens: 700,
+        system: buildModelSystemPrompt(),
+        messages: [{ role: 'user', content: buildModelUserPrompt(question, mode, sources) }],
       }),
     });
 
@@ -321,12 +326,17 @@ async function callLocalModel(question: string, mode: AnswerMode, sources: Retri
     }
 
     const payload = (await response.json()) as {
-      message?: {
-        content?: string;
-      };
+      content?: Array<{
+        type?: string;
+        text?: string;
+      }>;
     };
 
-    return payload.message?.content?.trim() ?? null;
+    return payload.content
+      ?.filter((block) => block.type === 'text')
+      .map((block) => block.text ?? '')
+      .join('\n')
+      .trim() || null;
   } catch {
     return null;
   }
@@ -336,7 +346,7 @@ export async function answerQuestion(question: string): Promise<AssistantRespons
   const sources = rankSources(question);
   const citations = sources.map((source) => source.id);
   const mode = classifyMode(question);
-  const modelAnswer = await callLocalModel(question, mode, sources);
+  const modelAnswer = await callClaudeModel(question, mode, sources);
 
   return {
     answer: modelAnswer ?? buildAnswer(question, sources),
@@ -345,7 +355,7 @@ export async function answerQuestion(question: string): Promise<AssistantRespons
     mode,
     confidence: determineConfidence(sources, question),
     followUp: buildFollowUp(mode),
-    provider: modelAnswer ? 'ollama' : 'fallback',
-    modelName: modelAnswer ? defaultModelName : undefined,
+    provider: modelAnswer ? 'claude' : 'fallback',
+    modelName: modelAnswer ? defaultAnthropicModel : undefined,
   };
 }
