@@ -1,36 +1,57 @@
-import { knowledgeBase, starterPrompts, type KnowledgeChunk } from './knowledgeBase';
+export const knowledgeBase = [
+  {
+    id: 'company-overview',
+    title: 'PavePal company overview',
+    category: 'company',
+    summary: 'Road assessment platform focused on computer vision and maintenance planning.',
+    content:
+      'PavePal is a road assessment platform that helps users proactively maintain road networks. It uses computer vision to detect road defects and road assets at a customer-defined inspection frequency.',
+    tags: ['PavePal', 'road assessment', 'computer vision', 'defects', 'assets'],
+  },
+  {
+    id: 'project-scope',
+    title: 'Capstone project scope',
+    category: 'project',
+    summary: 'Ground AI retrieval across inspection data, guidance documents, and cost tables.',
+    content:
+      'The capstone focuses on retrieval quality and failure modes. The goal is to connect structured road inspection data with unstructured engineering guidance and evaluate whether an AI system can ground maintenance decisions transparently.',
+    tags: ['RAG', 'retrieval', 'grounding', 'evaluation', 'maintenance decisions'],
+  },
+  {
+    id: 'inspection-data',
+    title: 'Inspection data model',
+    category: 'data',
+    summary: '20,829 image-level detections and 1,960 road segments with PCI scores.',
+    content:
+      'The live dataset includes GeoJSON road segments, image-level defect detections, and segment-level PCI scores. Defect classes include longitudinal cracks, transverse cracks, block cracks, alligator cracks, potholes, patching, repaired cracks, sealing, and manhole covers.',
+    tags: ['PCI', 'road segments', 'defects', 'GeoJSON', 'inspection'],
+  },
+  {
+    id: 'gdot-guide',
+    title: 'GDOT preservation guide',
+    category: 'guide',
+    summary: 'Authoritative engineering guidance for preservation and treatment selection.',
+    content:
+      'The GDOT Pavement Preservation Guide serves as the grounding reference for treatment selection, construction procedures, and QA/QC. It is the primary rule book for answering what repair is appropriate for a given condition.',
+    tags: ['GDOT', 'preservation', 'treatment selection', 'engineering guidance'],
+  },
+  {
+    id: 'rehab-activities',
+    title: 'Rehab activities and cost data',
+    category: 'cost',
+    summary: 'PCI bands map to rehab actions and unit costs, including 2024 bid tabulation prices.',
+    content:
+      'The rehab activities sheet links pavement type and PCI ranges to recommended actions and base rates. The 2024 bid tabulation adds real-world contractor pricing that can be used to ground cost estimates.',
+    tags: ['rehab', 'cost', 'bid tabulation', 'unit rate', 'PCI band'],
+  },
+];
 
-export type AnswerMode = 'overview' | 'retrieval' | 'guide' | 'cost' | 'fallback';
-export type ConfidenceLevel = 'high' | 'medium' | 'low';
-
-export interface RetrievedSource {
-  id: string;
-  title: string;
-  summary: string;
-  score: number;
-  reason: string;
-}
-
-export interface ChatMessageModel {
-  id: string;
-  role: 'user' | 'assistant';
-  text: string;
-  citations?: string[];
-  sources?: RetrievedSource[];
-}
-
-export interface AssistantResponse {
-  answer: string;
-  citations: string[];
-  sources: RetrievedSource[];
-  mode: AnswerMode;
-  confidence: ConfidenceLevel;
-  followUp: string;
-  provider: 'claude' | 'fallback';
-  modelName?: string;
-}
-
-export { starterPrompts };
+export const starterPrompts = [
+  'What is PavePal and what does it do?',
+  'How does the chatbot ground answers?',
+  'What data sources are in the project?',
+  'Why is the GDOT guide important?',
+];
 
 const defaultAnthropicApiKey = (import.meta.env.VITE_ANTHROPIC_API_KEY ?? '').toString().trim();
 const defaultAnthropicModel = (import.meta.env.VITE_ANTHROPIC_MODEL ?? 'claude-3-5-sonnet-latest').toString();
@@ -68,18 +89,18 @@ const stopWords = new Set([
   'you',
 ]);
 
-function normalize(text: string) {
+function normalize(text) {
   return text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ');
 }
 
-function tokenize(text: string) {
+function tokenize(text) {
   return normalize(text)
     .split(/\s+/)
     .map((token) => token.trim())
     .filter((token) => token && !stopWords.has(token));
 }
 
-function scoreChunk(question: string, chunk: KnowledgeChunk) {
+function scoreChunk(question, chunk) {
   const queryTokens = new Set(tokenize(question));
   const contentTokens = tokenize([chunk.title, chunk.summary, chunk.content, chunk.tags.join(' ')].join(' '));
   let score = 0;
@@ -123,7 +144,7 @@ function scoreChunk(question: string, chunk: KnowledgeChunk) {
   return score;
 }
 
-function classifyMode(question: string): AnswerMode {
+function classifyMode(question) {
   const normalized = normalize(question);
 
   if (normalized.includes('what is pavepal') || normalized.includes('what does pavepal do')) {
@@ -145,7 +166,7 @@ function classifyMode(question: string): AnswerMode {
   return 'fallback';
 }
 
-function describeReason(question: string, chunk: KnowledgeChunk) {
+function describeReason(question, chunk) {
   const normalized = normalize(question);
 
   if (chunk.id === 'company-overview') {
@@ -173,7 +194,7 @@ function describeReason(question: string, chunk: KnowledgeChunk) {
   return 'Relevant to the question terms and the local PavePal scope.';
 }
 
-function rankSources(question: string) {
+function rankSources(question) {
   return knowledgeBase
     .map((chunk) => ({
       chunk,
@@ -191,7 +212,7 @@ function rankSources(question: string) {
     }));
 }
 
-function buildAnswer(question: string, sources: RetrievedSource[]) {
+function buildAnswer(question, sources) {
   const normalized = normalize(question);
 
   if (normalized.includes('what is pavepal') || normalized.includes('what does pavepal do')) {
@@ -237,7 +258,7 @@ function buildAnswer(question: string, sources: RetrievedSource[]) {
   return `The strongest local evidence points to ${lead.title}. ${lead.summary} The assistant should use that evidence together with the other retrieved sources to answer the question in a grounded way.`;
 }
 
-function determineConfidence(sources: RetrievedSource[], question: string): ConfidenceLevel {
+function determineConfidence(sources, question) {
   const normalized = normalize(question);
 
   if (normalized.includes('what is pavepal') || normalized.includes('what does pavepal do')) {
@@ -255,7 +276,7 @@ function determineConfidence(sources: RetrievedSource[], question: string): Conf
   return 'low';
 }
 
-function buildFollowUp(mode: AnswerMode) {
+function buildFollowUp(mode) {
   switch (mode) {
     case 'overview':
       return 'Ask about the data sources, PCI scoring, or the GDOT guide next.';
@@ -280,7 +301,7 @@ function buildModelSystemPrompt() {
   ].join(' ');
 }
 
-function buildModelUserPrompt(question: string, mode: AnswerMode, sources: RetrievedSource[]) {
+export function baseModelQuery(question, mode, sources) {
   const contextBlock =
     sources.length > 0
       ? sources
@@ -300,7 +321,7 @@ function buildModelUserPrompt(question: string, mode: AnswerMode, sources: Retri
   ].join('\n');
 }
 
-async function callClaudeModel(question: string, mode: AnswerMode, sources: RetrievedSource[]) {
+async function callClaudeModel(question, mode, sources) {
   if (!defaultAnthropicApiKey) {
     return null;
   }
@@ -317,7 +338,7 @@ async function callClaudeModel(question: string, mode: AnswerMode, sources: Retr
         model: defaultAnthropicModel,
         max_tokens: 700,
         system: buildModelSystemPrompt(),
-        messages: [{ role: 'user', content: buildModelUserPrompt(question, mode, sources) }],
+        messages: [{ role: 'user', content: baseModelQuery(question, mode, sources) }],
       }),
     });
 
@@ -325,24 +346,21 @@ async function callClaudeModel(question: string, mode: AnswerMode, sources: Retr
       return null;
     }
 
-    const payload = (await response.json()) as {
-      content?: Array<{
-        type?: string;
-        text?: string;
-      }>;
-    };
+    const payload = await response.json();
 
-    return payload.content
-      ?.filter((block) => block.type === 'text')
-      .map((block) => block.text ?? '')
-      .join('\n')
-      .trim() || null;
+    return (
+      payload.content
+        ?.filter((block) => block.type === 'text')
+        .map((block) => block.text ?? '')
+        .join('\n')
+        .trim() || null
+    );
   } catch {
     return null;
   }
 }
 
-export async function answerQuestion(question: string): Promise<AssistantResponse> {
+export async function answerQuestion(question) {
   const sources = rankSources(question);
   const citations = sources.map((source) => source.id);
   const mode = classifyMode(question);

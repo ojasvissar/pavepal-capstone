@@ -1,13 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { answerQuestion, starterPrompts, type AssistantResponse, type ChatMessageModel, type RetrievedSource } from './lib/rag';
-import { knowledgeBase } from './lib/knowledgeBase';
+import { answerQuestion, starterPrompts, knowledgeBase } from './lib/rag.js';
 
-type PipelineStep = {
-  label: string;
-  detail: string;
-};
-
-const pipeline: PipelineStep[] = [
+const pipeline = [
   { label: 'Inspect', detail: 'vehicle-mounted imagery' },
   { label: 'Detect', detail: 'cracks, potholes, assets' },
   { label: 'Score', detail: 'PCI by road segment' },
@@ -22,7 +16,7 @@ const operationalBullets = [
   'Supports maintenance planning with engineering guides, historical reports, and cost data.',
 ];
 
-const initialMessages: ChatMessageModel[] = [
+const initialMessages = [
   {
     id: 'welcome',
     role: 'assistant',
@@ -32,7 +26,7 @@ const initialMessages: ChatMessageModel[] = [
   },
 ];
 
-function MetricTile({ label, value, detail }: { label: string; value: string; detail: string }) {
+function MetricTile({ label, value, detail }) {
   return (
     <article className="metric-card">
       <span>{label}</span>
@@ -42,7 +36,7 @@ function MetricTile({ label, value, detail }: { label: string; value: string; de
   );
 }
 
-function PipelinePill({ step }: { step: PipelineStep }) {
+function PipelinePill({ step }) {
   return (
     <div className="pipeline-pill">
       <strong>{step.label}</strong>
@@ -51,7 +45,7 @@ function PipelinePill({ step }: { step: PipelineStep }) {
   );
 }
 
-function SourceCard({ source }: { source: RetrievedSource }) {
+function SourceCard({ source }) {
   return (
     <article className="source-card">
       <div className="source-topline">
@@ -65,7 +59,7 @@ function SourceCard({ source }: { source: RetrievedSource }) {
   );
 }
 
-function KnowledgeCard({ title, summary, detail }: { title: string; summary: string; detail: string }) {
+function KnowledgeCard({ title, summary, detail }) {
   return (
     <article className="knowledge-card">
       <p className="knowledge-label">{detail}</p>
@@ -75,7 +69,7 @@ function KnowledgeCard({ title, summary, detail }: { title: string; summary: str
   );
 }
 
-function ChatBubble({ message }: { message: ChatMessageModel }) {
+function ChatBubble({ message }) {
   const roleLabel = message.role === 'assistant' ? 'Assistant' : 'You';
 
   return (
@@ -106,11 +100,11 @@ const dashboardStats = [
 ];
 
 function App() {
-  const [messages, setMessages] = useState<ChatMessageModel[]>(initialMessages);
+  const [messages, setMessages] = useState(initialMessages);
   const [input, setInput] = useState(starterPrompts[0]);
-  const [lastResponse, setLastResponse] = useState<AssistantResponse | null>(null);
+  const [lastResponse, setLastResponse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const endRef = useRef<HTMLDivElement | null>(null);
+  const endRef = useRef(null);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -121,21 +115,23 @@ function App() {
     [messages],
   );
 
-  const previewSources = lastResponse?.sources ?? knowledgeBase.slice(0, 3).map((source, index) => ({
-    id: source.id,
-    title: source.title,
-    summary: source.summary,
-    score: 12 - index,
-    reason: 'Sample evidence pulled from the curated demo corpus.',
-  }));
+  const previewSources =
+    lastResponse?.sources ??
+    knowledgeBase.slice(0, 3).map((source, index) => ({
+      id: source.id,
+      title: source.title,
+      summary: source.summary,
+      score: 12 - index,
+      reason: 'Sample evidence pulled from the curated demo corpus.',
+    }));
 
-  async function submitQuestion(question: string) {
+  async function submitQuestion(question) {
     const trimmed = question.trim();
     if (!trimmed || isLoading) {
       return;
     }
 
-    const nextUserMessage: ChatMessageModel = {
+    const nextUserMessage = {
       id: `user-${Date.now()}`,
       role: 'user',
       text: trimmed,
@@ -149,7 +145,7 @@ function App() {
       const response = await answerQuestion(trimmed);
       setLastResponse(response);
 
-      const nextAssistantMessage: ChatMessageModel = {
+      const nextAssistantMessage = {
         id: `assistant-${Date.now()}`,
         role: 'assistant',
         text: response.answer,
@@ -196,7 +192,7 @@ function App() {
             <p>
               {lastResponse
                 ? lastResponse.provider === 'claude'
-                  ? `Answered by ${lastResponse.modelName ?? 'local model'}. Confidence: ${lastResponse.confidence}.`
+                  ? `Answered by ${lastResponse.modelName ?? 'Claude'}. Confidence: ${lastResponse.confidence}.`
                   : `Using fallback retrieval. Confidence: ${lastResponse.confidence}.`
                 : 'Ready to query Claude API or the fallback knowledge base.'}
             </p>

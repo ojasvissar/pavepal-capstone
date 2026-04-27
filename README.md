@@ -17,16 +17,11 @@ Then open the local Vite URL shown in the terminal.
 
 ## Configure Claude
 
-This project expects a Claude API key in your environment.
+Copy `.env.example` to `.env` and add your key:
 
 ```bash
 VITE_ANTHROPIC_API_KEY=your_api_key_here
 VITE_ANTHROPIC_MODEL=claude-3-5-sonnet-latest
-```
-
-You can also override the API base URL if needed:
-
-```bash
 VITE_ANTHROPIC_BASE_URL=https://api.anthropic.com
 ```
 
@@ -44,13 +39,13 @@ npm run preview
 
 ## Project structure
 
-- `src/App.tsx` contains the dashboard and chat UI.
-- `src/lib/rag.ts` contains the local retrieval and answer logic.
-- `src/lib/knowledgeBase.ts` contains the dummy PavePal corpus.
+- `src/App.jsx` contains the dashboard and chat UI.
+- `src/lib/rag.js` contains the local retrieval, Claude request, and answer logic.
 - `src/styles.css` contains the visual system for the dashboard.
 
 ## Notes
 
 - The demo uses Claude when an API key is available and otherwise falls back to deterministic retrieval.
 - Because the API key is read from a Vite env var, this setup is only appropriate for local prototyping. Move the Claude call behind a server proxy before shipping.
+- The base query sent to the model is built in `src/lib/rag.js` inside `baseModelQuery(question, mode, sources)`, and the system prompt lives in `buildModelSystemPrompt()`.
 - The generated build output in `dist/` is ignored and should not be committed.
