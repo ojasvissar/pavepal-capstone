@@ -1,6 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { answerQuestion, starterPrompts, knowledgeBase } from './lib/rag.js';
 
+const brandLogoUrl = 'https://static.wixstatic.com/media/cc1f3a_760dc06313af4c13af4bac3b41b602a6~mv2.png/v1/fill/w_312,h_72,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Primary%20logo%20(full%20color)_edited.png';
+const brandHeroUrl = 'https://static.wixstatic.com/media/cc1f3a_bc960c66bae748019bce063f50bf9751~mv2.png/v1/fill/w_955,h_887,al_c,q_90,enc_avif,quality_auto/410f33aa-1c55-48b2-9ae5-9afdc4071b0f_edi.png';
+
+const tabs = [
+  { id: 'ai', label: 'AI Chat', detail: 'Ask the assistant first' },
+  { id: 'network', label: 'Network', detail: 'Workflow and stats' },
+  { id: 'evidence', label: 'Evidence', detail: 'Sources and trace' },
+];
+
 const pipeline = [
   { label: 'Inspect', detail: 'vehicle-mounted imagery' },
   { label: 'Detect', detail: 'cracks, potholes, assets' },
@@ -21,9 +30,15 @@ const initialMessages = [
     id: 'welcome',
     role: 'assistant',
     text:
-      'PavePal is a road assessment platform. It uses vehicle-mounted computer vision to detect pavement defects, score road segments with PCI, and support maintenance planning with evidence from city reports and engineering guidance.',
+      'PavePal is an AI-powered road and asset intelligence platform. It uses vehicle-mounted computer vision to detect pavement defects, score road segments with PCI, and support maintenance planning with evidence from city reports and engineering guidance.',
     citations: ['company-overview', 'project-scope'],
   },
+];
+
+const dashboardStats = [
+  { label: 'Road segments', value: '1,960', detail: 'City inventory in scope' },
+  { label: 'Scanned images', value: '20,829', detail: 'CV detections from field runs' },
+  { label: 'Knowledge chunks', value: String(knowledgeBase.length), detail: 'Local retrieval corpus' },
 ];
 
 function MetricTile({ label, value, detail }) {
@@ -33,6 +48,21 @@ function MetricTile({ label, value, detail }) {
       <strong>{value}</strong>
       <p>{detail}</p>
     </article>
+  );
+}
+
+function TabButton({ tab, isActive, onClick }) {
+  return (
+    <button
+      className={`tab-button ${isActive ? 'active' : ''}`}
+      type="button"
+      role="tab"
+      aria-selected={isActive}
+      onClick={onClick}
+    >
+      <strong>{tab.label}</strong>
+      <span>{tab.detail}</span>
+    </button>
   );
 }
 
@@ -93,17 +123,12 @@ function ChatBubble({ message }) {
   );
 }
 
-const dashboardStats = [
-  { label: 'Road segments', value: '1,960', detail: 'City inventory in scope' },
-  { label: 'Scanned images', value: '20,829', detail: 'CV detections from field runs' },
-  { label: 'Knowledge chunks', value: String(knowledgeBase.length), detail: 'Local retrieval corpus' },
-];
-
 function App() {
   const [messages, setMessages] = useState(initialMessages);
   const [input, setInput] = useState(starterPrompts[0]);
   const [lastResponse, setLastResponse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('ai');
   const endRef = useRef(null);
 
   useEffect(() => {
@@ -140,6 +165,7 @@ function App() {
     setInput('');
     setMessages((current) => [...current, nextUserMessage]);
     setIsLoading(true);
+    setActiveTab('ai');
 
     try {
       const response = await answerQuestion(trimmed);
@@ -164,48 +190,36 @@ function App() {
       <div className="ambient ambient-a" />
       <div className="ambient ambient-b" />
 
-      <header className="hero-card">
-        <div className="hero-copy-block">
-          <p className="eyebrow">PavePal / RAG dashboard prototype</p>
-          <h1>Ask what the road network needs and see the evidence trail.</h1>
-          <p className="hero-copy">
-            This local demo uses dummy knowledge sources drawn from the project scope to explain
-            what PavePal is, what it does, and how a retrieval-augmented assistant should ground
-            answers in road data and guidance documents.
-          </p>
-          <div className="pipeline-row">
-            {pipeline.map((step) => (
-              <PipelinePill key={step.label} step={step} />
-            ))}
-          </div>
-        </div>
-
-        <div className="hero-side">
-          <div className="hero-stats">
-            {dashboardStats.map((stat) => (
-              <MetricTile key={stat.label} {...stat} />
-            ))}
-          </div>
-          <div className="signal-card">
-            <span>Current mode</span>
-            <strong>{lastResponse?.mode ?? 'overview'}</strong>
-            <p>
-              {lastResponse
-                ? lastResponse.provider === 'claude'
-                  ? `Answered by ${lastResponse.modelName ?? 'Claude'}. Confidence: ${lastResponse.confidence}.`
-                  : `Using fallback retrieval. Confidence: ${lastResponse.confidence}.`
-                : 'Ready to query Claude API or the fallback knowledge base.'}
+      <header className="topbar">
+        <div className="brand-lockup">
+          <img className="brand-logo" src={brandLogoUrl} alt="PavePal logo" />
+          <div className="brand-copy-block compact">
+            <p className="brand-kicker">AI-Powered Road & Asset Intelligence</p>
+            <p className="brand-subcopy">
+              Transform geo-tagged roadway imagery into structured, location-accurate road
+              condition insights.
             </p>
           </div>
         </div>
+
+        <div className="tab-strip" role="tablist" aria-label="Dashboard sections">
+          {tabs.map((tab) => (
+            <TabButton
+              key={tab.id}
+              tab={tab}
+              isActive={activeTab === tab.id}
+              onClick={() => setActiveTab(tab.id)}
+            />
+          ))}
+        </div>
       </header>
 
-      <main className="dashboard-grid">
+      <section className="workspace" aria-label="PavePal dashboard workspace">
         <section className="chat-panel panel-card">
           <div className="panel-header">
             <div>
-              <p className="section-label">Assistant</p>
-              <h2>RAG chat</h2>
+              <p className="section-label">AI Chat</p>
+              <h1>Ask the model first.</h1>
             </div>
             <div className="status-pill">Claude API ready</div>
           </div>
@@ -238,7 +252,12 @@ function App() {
             <div className="composer-actions">
               <div className="prompt-list" aria-label="Suggested prompts">
                 {starterPrompts.map((prompt) => (
-                  <button key={prompt} type="button" onClick={() => void submitQuestion(prompt)} disabled={isLoading}>
+                  <button
+                    key={prompt}
+                    type="button"
+                    onClick={() => void submitQuestion(prompt)}
+                    disabled={isLoading}
+                  >
                     {prompt}
                   </button>
                 ))}
@@ -250,60 +269,117 @@ function App() {
           </form>
         </section>
 
-        <aside className="side-panel">
-          <section className="info-card panel-card">
-            <div className="panel-header compact">
-              <div>
-                <p className="section-label">What PavePal does</p>
-                <h2>Operational overview</h2>
+        <aside className="workspace-panel">
+          {activeTab === 'ai' ? (
+            <section className="brand-card panel-card">
+              <img className="brand-hero-image" src={brandHeroUrl} alt="PavePal brand artwork" />
+              <div className="brand-copy-block">
+                <p className="section-label">PavePal theme</p>
+                <h2>Road intelligence, made conversational.</h2>
+                <p className="hero-copy">
+                  AI-powered platform for road condition monitoring, defect detection, and
+                  infrastructure asset insights.
+                </p>
               </div>
-            </div>
-            <ul className="bullet-list">
-              {operationalBullets.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </section>
+              <div className="hero-stats compact-grid">
+                {dashboardStats.map((stat) => (
+                  <MetricTile key={stat.label} {...stat} />
+                ))}
+              </div>
+              <div className="signal-card">
+                <span>Current mode</span>
+                <strong>{lastResponse?.mode ?? 'overview'}</strong>
+                <p>
+                  {lastResponse
+                    ? lastResponse.provider === 'claude'
+                      ? `Answered by ${lastResponse.modelName ?? 'Claude'}. Confidence: ${lastResponse.confidence}.`
+                      : `Using fallback retrieval. Confidence: ${lastResponse.confidence}.`
+                    : 'Ready to query Claude API or the fallback knowledge base.'}
+                </p>
+              </div>
+            </section>
+          ) : null}
 
-          <section className="info-card panel-card">
-            <div className="panel-header compact">
-              <div>
-                <p className="section-label">Retrieval trace</p>
-                <h2>Answer context</h2>
-              </div>
-            </div>
-            <div className="trace-summary">
-              <div>
-                <span>Follow-up</span>
-                <strong>{lastResponse?.followUp ?? 'Ask a question to see a grounded answer.'}</strong>
-              </div>
-              <div>
-                <span>Latest answer</span>
-                <strong>{latestAssistantMessage?.text ?? 'Waiting for the next prompt.'}</strong>
-              </div>
-            </div>
-            <div className="source-list">
-              {previewSources?.map((source) => (
-                <SourceCard key={source.id} source={source} />
-              ))}
-            </div>
-          </section>
+          {activeTab === 'network' ? (
+            <section className="panel-stack">
+              <section className="info-card panel-card">
+                <div className="panel-header compact">
+                  <div>
+                    <p className="section-label">What PavePal does</p>
+                    <h2>Operational overview</h2>
+                  </div>
+                </div>
+                <ul className="bullet-list">
+                  {operationalBullets.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </section>
 
-          <section className="info-card panel-card">
-            <div className="panel-header compact">
-              <div>
-                <p className="section-label">Knowledge base</p>
-                <h2>Curated dummy corpus</h2>
-              </div>
-            </div>
-            <div className="knowledge-grid">
-              {knowledgeBase.map((source) => (
-                <KnowledgeCard key={source.id} title={source.title} summary={source.summary} detail={source.category} />
-              ))}
-            </div>
-          </section>
+              <section className="info-card panel-card">
+                <div className="panel-header compact">
+                  <div>
+                    <p className="section-label">From imagery to action</p>
+                    <h2>Workflow pipeline</h2>
+                  </div>
+                </div>
+                <div className="pipeline-row">
+                  {pipeline.map((step) => (
+                    <PipelinePill key={step.label} step={step} />
+                  ))}
+                </div>
+              </section>
+            </section>
+          ) : null}
+
+          {activeTab === 'evidence' ? (
+            <section className="panel-stack">
+              <section className="info-card panel-card">
+                <div className="panel-header compact">
+                  <div>
+                    <p className="section-label">Retrieval trace</p>
+                    <h2>Answer context</h2>
+                  </div>
+                </div>
+                <div className="trace-summary">
+                  <div>
+                    <span>Follow-up</span>
+                    <strong>{lastResponse?.followUp ?? 'Ask a question to see a grounded answer.'}</strong>
+                  </div>
+                  <div>
+                    <span>Latest answer</span>
+                    <strong>{latestAssistantMessage?.text ?? 'Waiting for the next prompt.'}</strong>
+                  </div>
+                </div>
+                <div className="source-list">
+                  {previewSources?.map((source) => (
+                    <SourceCard key={source.id} source={source} />
+                  ))}
+                </div>
+              </section>
+
+              <section className="info-card panel-card">
+                <div className="panel-header compact">
+                  <div>
+                    <p className="section-label">Knowledge base</p>
+                    <h2>Curated dummy corpus</h2>
+                  </div>
+                </div>
+                <div className="knowledge-grid">
+                  {knowledgeBase.map((source) => (
+                    <KnowledgeCard
+                      key={source.id}
+                      title={source.title}
+                      summary={source.summary}
+                      detail={source.category}
+                    />
+                  ))}
+                </div>
+              </section>
+            </section>
+          ) : null}
         </aside>
-      </main>
+      </section>
     </div>
   );
 }
