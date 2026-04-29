@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { answerQuestion, starterPrompts, knowledgeBase } from './lib/rag.js';
+import { answerQuestion, starterPrompts, initializeKnowledgeBase, knowledgeBase } from './lib/rag.js';
 
 const brandLogoUrl = 'https://static.wixstatic.com/media/cc1f3a_760dc06313af4c13af4bac3b41b602a6~mv2.png/v1/fill/w_312,h_72,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Primary%20logo%20(full%20color)_edited.png';
 
@@ -55,7 +55,23 @@ function App() {
   const [input, setInput] = useState('');
   const [lastResponse, setLastResponse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const endRef = useRef(null);
+
+  // Initialize knowledge base on mount
+  useEffect(() => {
+    async function initializeApp() {
+      try {
+        await initializeKnowledgeBase();
+        setIsInitialized(true);
+      } catch (error) {
+        console.error('Failed to initialize knowledge base:', error);
+        setIsInitialized(true); // Continue anyway with fallback
+      }
+    }
+
+    initializeApp();
+  }, []);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -126,7 +142,9 @@ function App() {
               <p className="section-label">AI Chat</p>
               <h1>Ask the model first.</h1>
             </div>
-            <div className="status-pill">Claude API ready</div>
+            <div className="status-pill">
+              {isInitialized ? 'Gemini API Ready' : 'Initializing...'}
+            </div>
           </div>
 
           <div className="messages" aria-live="polite">
@@ -150,9 +168,9 @@ function App() {
               id="question-input"
               value={input}
               onChange={(event) => setInput(event.target.value)}
-              placeholder="Ask about PavePal, PCI, defects, or rehab recommendations..."
+              placeholder="Ask about PavePal, road inspection, defects, or maintenance planning..."
               rows={3}
-              disabled={isLoading}
+              disabled={isLoading || !isInitialized}
             />
             <div className="composer-actions">
               <div className="prompt-list" aria-label="Suggested prompts">
@@ -161,13 +179,13 @@ function App() {
                     key={prompt}
                     type="button"
                     onClick={() => void submitQuestion(prompt)}
-                    disabled={isLoading}
+                    disabled={isLoading || !isInitialized}
                   >
                     {prompt}
                   </button>
                 ))}
               </div>
-              <button className="send-button" type="submit" disabled={isLoading}>
+              <button className="send-button" type="submit" disabled={isLoading || !isInitialized}>
                 {isLoading ? 'Thinking...' : 'Send'}
               </button>
             </div>
