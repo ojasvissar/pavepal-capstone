@@ -86,27 +86,56 @@ function scoreChunk(question, chunk) {
     score += 10;
   }
 
+  // Rehabilitation and treatment queries
+  if (
+    normalizedQuestion.includes('repair') ||
+    normalizedQuestion.includes('rehab') ||
+    normalizedQuestion.includes('treatment') ||
+    normalizedQuestion.includes('overlay') ||
+    normalizedQuestion.includes('seal') ||
+    normalizedQuestion.includes('mill')
+  ) {
+    if (chunk.category === 'rehabilitation') score += 10;
+    if (chunk.category === 'guidance') score += 8;
+    if (chunk.category === 'cost') score += 7;
+  }
+
+  // Cost and pricing queries
+  if (
+    normalizedQuestion.includes('cost') ||
+    normalizedQuestion.includes('price') ||
+    normalizedQuestion.includes('cheap') ||
+    normalizedQuestion.includes('cheapest') ||
+    normalizedQuestion.includes('bid') ||
+    normalizedQuestion.includes('budget')
+  ) {
+    if (chunk.category === 'cost') score += 12;
+    if (chunk.category === 'rehabilitation') score += 6;
+  }
+
   // Data and structure queries
   if (
     normalizedQuestion.includes('data') ||
     normalizedQuestion.includes('source') ||
     normalizedQuestion.includes('retrieval') ||
     normalizedQuestion.includes('segment') ||
-    normalizedQuestion.includes('road')
+    normalizedQuestion.includes('road') ||
+    normalizedQuestion.includes('inspection')
   ) {
-    if (chunk.category === 'data') score += 6;
-    if (chunk.category === 'project') score += 3;
+    if (chunk.category === 'data') score += 8;
+    if (chunk.category === 'project') score += 4;
   }
 
   // Guidance and maintenance queries
   if (
     normalizedQuestion.includes('guide') ||
     normalizedQuestion.includes('recommend') ||
-    normalizedQuestion.includes('repair') ||
-    normalizedQuestion.includes('treatment')
+    normalizedQuestion.includes('treatment') ||
+    normalizedQuestion.includes('best practice') ||
+    normalizedQuestion.includes('engineering')
   ) {
-    if (chunk.category === 'guide') score += 8;
-    if (chunk.category === 'data') score += 4;
+    if (chunk.category === 'guidance') score += 10;
+    if (chunk.id === 'gdot-guide') score += 5;
   }
 
   // Defect-specific queries
@@ -114,17 +143,33 @@ function scoreChunk(question, chunk) {
     normalizedQuestion.includes('defect') ||
     normalizedQuestion.includes('crack') ||
     normalizedQuestion.includes('pothole') ||
-    normalizedQuestion.includes('damage')
+    normalizedQuestion.includes('damage') ||
+    normalizedQuestion.includes('distress')
   ) {
     if (chunk.id === 'defect-classification' || chunk.id === 'inspection-data') {
-      score += 7;
+      score += 9;
     }
+    if (chunk.category === 'guidance') score += 5;
   }
 
   // Statistics and quantitative queries
-  if (normalizedQuestion.includes('how many') || normalizedQuestion.includes('statistics')) {
+  if (normalizedQuestion.includes('how many') || normalizedQuestion.includes('statistics') || normalizedQuestion.includes('count')) {
     if (chunk.id === 'data-summary' || chunk.id === 'inspection-data') {
-      score += 6;
+      score += 8;
+    }
+  }
+
+  // PCI threshold queries
+  if (normalizedQuestion.includes('pci') || normalizedQuestion.includes('pavement condition')) {
+    if (chunk.category === 'rehabilitation' || chunk.id === 'gdot-guide') {
+      score += 8;
+    }
+  }
+
+  // IMS report queries
+  if (normalizedQuestion.includes('ims') || normalizedQuestion.includes('peachtree corners')) {
+    if (chunk.category === 'data' && (chunk.id?.includes('ims') || chunk.content?.includes('IMS'))) {
+      score += 10;
     }
   }
 
@@ -140,10 +185,30 @@ function describeReason(chunk) {
     'project-scope': 'Explains the capstone goals of grounded retrieval and evaluation.',
     'inspection-data': 'Describes the structure and content of the inspection dataset.',
     'road-infrastructure': 'Details about road segments and infrastructure properties.',
-    'gdot-guide': 'Engineering guidance for maintenance decisions and treatment selection.',
+    'gdot-guide': 'GDOT preservation standards and authoritative engineering guidance.',
     'defect-classification': 'Classification and definitions of pavement defects detected.',
     'data-summary': 'High-level summary of the inspection dataset and statistics.',
   };
+
+  // For rehabilitation activities
+  if (chunk.category === 'rehabilitation') {
+    return `Treatment option: ${chunk.title} with guidance for PCI range and unit costs.`;
+  }
+
+  // For GDOT guidance sections
+  if (chunk.id?.includes('gdot-')) {
+    return `GDOT guidance: ${chunk.title} - authoritative engineering standard.`;
+  }
+
+  // For cost data
+  if (chunk.category === 'cost') {
+    return `Real-world 2024 contractor pricing: ${chunk.title}.`;
+  }
+
+  // For IMS reports
+  if (chunk.id?.includes('ims-')) {
+    return `Pavement management report: ${chunk.title}.`;
+  }
 
   return reasons[chunk.id] || 'Relevant evidence from the project knowledge base.';
 }

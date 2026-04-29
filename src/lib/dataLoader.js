@@ -1,7 +1,16 @@
 /**
  * Data Loader for PavePal RAG System
- * Loads and processes data from JSON files and company docs
+ * Loads and processes data from JSON files, documents, and company docs
  */
+
+import {
+  getRehabActivities,
+  getGDOTGuideSections,
+  get2024BidTabulation,
+  getIMS2023ReportData,
+  getIMS2015BaselineData,
+  buildComprehensiveKnowledgeBase,
+} from './documentExtractor.js';
 
 /**
  * Load and parse JSON data from the data folder
@@ -68,7 +77,8 @@ export async function createKnowledgeBase() {
     loadLocations(),
   ]);
 
-  const knowledgeBase = [
+  // Base knowledge base with company and data info
+  const baseKnowledgeBase = [
     // Company Information
     {
       id: 'company-overview',
@@ -174,6 +184,12 @@ export async function createKnowledgeBase() {
       tags: ['dataset', 'statistics', 'inspection', 'coverage', 'regions'],
     },
   ];
+
+  // Add comprehensive document sources
+  const documentKnowledgeBase = buildComprehensiveKnowledgeBase();
+
+  // Combine all knowledge sources
+  const knowledgeBase = [...baseKnowledgeBase, ...documentKnowledgeBase];
 
   return { knowledgeBase, roadSegments, locations };
 }
