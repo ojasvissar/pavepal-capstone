@@ -1,0 +1,12 @@
+name: pavepal
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pandas=2.1.*
+  - geopandas=0.14.*
+  - shapely=2.0.*
+  - jupyterlab=4.*
+  - ipykernel=6.*
+  - openpyxl=3.1.*
+  - seaborn=0.14.*
