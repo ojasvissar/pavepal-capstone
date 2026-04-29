@@ -1,0 +1,66 @@
+[
+  {
+    "query_id": "Q1",
+    "query": "Which roads look highest priority for maintenance and why?",
+    "expected_sources": ["roadSegments"],
+    "expected_road_names": [],
+    "expected_keywords": ["pci", "defects"],
+    "notes": "Priority queries should pull structured road condition evidence."
+  },
+  {
+    "query_id": "Q2",
+    "query": "Summarize defect patterns on PEACHTREE PKWY.",
+    "expected_sources": ["roadSegments", "locations"],
+    "expected_road_names": ["PEACHTREE PKWY"],
+    "expected_keywords": ["cracks", "potholes", "defects"],
+    "notes": "Should retrieve PEACHTREE-specific records and defect terms."
+  },
+  {
+    "query_id": "Q3",
+    "query": "What defect patterns are visible on ELMSIDE VILLAGE LN?",
+    "expected_sources": ["roadSegments", "locations"],
+    "expected_road_names": ["ELMSIDE VILLAGE LN"],
+    "expected_keywords": ["defects", "cracks", "alligator"],
+    "notes": "Road-specific defect retrieval test."
+  },
+  {
+    "query_id": "Q4",
+    "query": "For roads with low PCI, what treatment guidance is suggested in the manual?",
+    "expected_sources": ["roadSegments", "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf"],
+    "expected_road_names": [],
+    "expected_keywords": ["maintenance", "treatment", "preservation"],
+    "notes": "Cross-source retrieval should include structured evidence and manual guidance."
+  },
+  {
+    "query_id": "Q5",
+    "query": "Compare defect patterns between ENGINEERING DR and GOLDEN LEAF TRL.",
+    "expected_sources": ["roadSegments", "locations"],
+    "expected_road_names": ["ENGINEERING DR", "GOLDEN LEAF TRL"],
+    "expected_keywords": ["defects", "cracks"],
+    "notes": "Multi-road comparison requires both roads in retrieval results."
+  },
+  {
+    "query_id": "Q6",
+    "query": "Which defects should trigger preventive maintenance instead of reconstruction?",
+    "expected_sources": ["GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf"],
+    "expected_road_names": [],
+    "expected_keywords": ["preventive", "maintenance", "preservation"],
+    "notes": "Manual-heavy conceptual question."
+  },
+  {
+    "query_id": "Q7",
+    "query": "What evidence suggests urgent intervention on GREEN POINTE PKWY?",
+    "expected_sources": ["roadSegments", "locations"],
+    "expected_road_names": ["GREEN POINTE PKWY"],
+    "expected_keywords": ["pci", "defects", "potholes"],
+    "notes": "Road-specific urgency check grounded in inspection signals."
+  },
+  {
+    "query_id": "Q8",
+    "query": "How can we justify maintenance decisions with traceable sources?",
+    "expected_sources": ["roadSegments", "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf"],
+    "expected_road_names": [],
+    "expected_keywords": ["source", "guidance", "evidence"],
+    "notes": "Transparency-focused retrieval across structured + unstructured sources."
+  }
+]

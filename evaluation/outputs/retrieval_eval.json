@@ -1,0 +1,712 @@
+{
+  "summary": {
+    "generated_at_utc": "2026-04-29T21:02:45.864211+00:00",
+    "dataset_documents": 23456,
+    "queries_evaluated": 8,
+    "top_k": 6,
+    "alpha": 0.65,
+    "metrics": {
+      "mean_precision_at_k": 0.7083,
+      "mean_recall_at_k": 0.0515,
+      "mean_reciprocal_rank": 0.7188,
+      "mean_ndcg_at_k": 0.7004
+    },
+    "failure_mode_counts": {
+      "low_retrieval_confidence_gap": 4,
+      "missing_structured_evidence": 6,
+      "no_relevant_retrieval": 1
+    }
+  },
+  "per_query": [
+    {
+      "query_id": "Q1",
+      "query": "Which roads look highest priority for maintenance and why?",
+      "notes": "Priority queries should pull structured road condition evidence.",
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "reciprocal_rank": 0.0,
+      "ndcg_at_k": 0.0,
+      "failure_modes": [
+        "no_relevant_retrieval",
+        "missing_structured_evidence"
+      ],
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "manual-456-0",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 1.0,
+          "dense_score": 0.0,
+          "sparse_score": 0.0955,
+          "road_name": null,
+          "pci": null,
+          "preview": "440    PAVEMENT MAINTENANCE AND REHABILITATION CRITERIA  The following decision tree shows the asphalt pavement maintenance and rehabilitation criteria  based on COAPCES rating, distress deduct values",
+          "is_relevant": false
+        },
+        {
+          "rank": 2,
+          "doc_id": "manual-193-1",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 0.9061,
+          "dense_score": 0.0,
+          "sparse_score": 0.0865,
+          "road_name": null,
+          "pci": null,
+          "preview": "raffic rural roads, and 78% perform it on their  high-traffic urban roads (Peshkin et al. 2011).  The general recommendation for pavements initially sealed at the time of construction is that the  joi",
+          "is_relevant": false
+        },
+        {
+          "rank": 3,
+          "doc_id": "manual-78-0",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 0.8592,
+          "dense_score": 0.0,
+          "sparse_score": 0.0821,
+          "road_name": null,
+          "pci": null,
+          "preview": "62    Therefore, when there are good structural conditions, selecting roads, including those with  moderate or high severity levels, distresses for thin overlay maintenance is very important.  Bad and",
+          "is_relevant": false
+        },
+        {
+          "rank": 4,
+          "doc_id": "manual-219-0",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 0.7972,
+          "dense_score": 0.0,
+          "sparse_score": 0.0761,
+          "road_name": null,
+          "pci": null,
+          "preview": "203    CHAPTER 5.  CRACK SEALING EFFECTIVENESS  STUDY USING 3D LASER TECHNOLOGY  INTRODUCTION  Crack sealing is the most common asphalt pavement preservation method used by many  departments of transp",
+          "is_relevant": false
+        },
+        {
+          "rank": 5,
+          "doc_id": "manual-464-1",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 0.7887,
+          "dense_score": 0.0,
+          "sparse_score": 0.0753,
+          "road_name": null,
+          "pci": null,
+          "preview": "http://dx.doi.org/10.5703/1288284316008  Maintenance, C. D. o. (2008). \"Rigid Pavement Preservation 2nd Edition\".  McGhee, K. H. 1995. Design, Construction, and Maintenance of PCC Pavement Joints. NCH",
+          "is_relevant": false
+        },
+        {
+          "rank": 6,
+          "doc_id": "manual-370-1",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 0.7666,
+          "dense_score": 0.0,
+          "sparse_score": 0.0732,
+          "road_name": null,
+          "pci": null,
+          "preview": "ted to  be the highest of the four test sections. However, for most of the measurements, the width of the  shoulder buildup was greater than the width of the yardstick used for measurements. For all  ",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "Q2",
+      "query": "Summarize defect patterns on PEACHTREE PKWY.",
+      "notes": "Should retrieve PEACHTREE-specific records and defect terms.",
+      "precision_at_k": 1.0,
+      "recall_at_k": 0.0096,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "failure_modes": [
+        "missing_structured_evidence",
+        "low_retrieval_confidence_gap"
+      ],
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "location-20627",
+          "source": "locations",
+          "score": 1.0,
+          "dense_score": 0.0,
+          "sparse_score": 0.0835,
+          "road_name": "PEACHTREE PKWY",
+          "pci": null,
+          "preview": "Inspection location record. Road name: PEACHTREE PKWY. Capture name: GX010223_time_5_00520. Longitude: -84.2288706944. Latitude: 33.9596695833. Observed defects: longitudinal cracks: 4.",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "location-22",
+          "source": "locations",
+          "score": 0.9927,
+          "dense_score": 0.0,
+          "sparse_score": 0.0829,
+          "road_name": "PEACHTREE PKWY",
+          "pci": null,
+          "preview": "Inspection location record. Road name: PEACHTREE PKWY. Capture name: GX010225_time_4_00540. Longitude: -84.2265093889. Latitude: 33.9618048889. Observed defects: none.",
+          "is_relevant": true
+        },
+        {
+          "rank": 3,
+          "doc_id": "location-69",
+          "source": "locations",
+          "score": 0.9884,
+          "dense_score": 0.0,
+          "sparse_score": 0.0825,
+          "road_name": "PEACHTREE PKWY",
+          "pci": null,
+          "preview": "Inspection location record. Road name: PEACHTREE PKWY. Capture name: GX010225_time_6_00740. Longitude: -84.2324176944. Latitude: 33.956223. Observed defects: block cracks: 1.",
+          "is_relevant": true
+        },
+        {
+          "rank": 4,
+          "doc_id": "location-16579",
+          "source": "locations",
+          "score": 0.9881,
+          "dense_score": 0.0,
+          "sparse_score": 0.0825,
+          "road_name": "PEACHTREE PKWY",
+          "pci": null,
+          "preview": "Inspection location record. Road name: PEACHTREE PKWY. Capture name: GX050327_time_1_00200. Longitude: -84.2202072778. Latitude: 33.9723861944. Observed defects: longitudinal cracks: 2.",
+          "is_relevant": true
+        },
+        {
+          "rank": 5,
+          "doc_id": "location-16568",
+          "source": "locations",
+          "score": 0.9881,
+          "dense_score": 0.0,
+          "sparse_score": 0.0825,
+          "road_name": "PEACHTREE PKWY",
+          "pci": null,
+          "preview": "Inspection location record. Road name: PEACHTREE PKWY. Capture name: GX050327_time_1_00090. Longitude: -84.2208153889. Latitude: 33.9710006944. Observed defects: longitudinal cracks: 2.",
+          "is_relevant": true
+        },
+        {
+          "rank": 6,
+          "doc_id": "location-7100",
+          "source": "locations",
+          "score": 0.9881,
+          "dense_score": 0.0,
+          "sparse_score": 0.0825,
+          "road_name": "PEACHTREE PKWY",
+          "pci": null,
+          "preview": "Inspection location record. Road name: PEACHTREE PKWY. Capture name: GX010281_time_1_00550. Longitude: -84.2194643889. Latitude: 33.9747454722. Observed defects: longitudinal cracks: 3.",
+          "is_relevant": true
+        }
+      ]
+    },
+    {
+      "query_id": "Q3",
+      "query": "What defect patterns are visible on ELMSIDE VILLAGE LN?",
+      "notes": "Road-specific defect retrieval test.",
+      "precision_at_k": 1.0,
+      "recall_at_k": 0.0822,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "failure_modes": [
+        "low_retrieval_confidence_gap"
+      ],
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "location-15214",
+          "source": "locations",
+          "score": 1.0,
+          "dense_score": 0.0,
+          "sparse_score": 0.243,
+          "road_name": "ELMSIDE VILLAGE LN",
+          "pci": null,
+          "preview": "Inspection location record. Road name: ELMSIDE VILLAGE LN. Capture name: GX030253_time_5_00390. Longitude: -84.2503439722. Latitude: 33.9547159722. Observed defects: none.",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "road-1335",
+          "source": "roadSegments",
+          "score": 0.9962,
+          "dense_score": 0.0,
+          "sparse_score": 0.2421,
+          "road_name": "ELMSIDE VILLAGE LN",
+          "pci": null,
+          "preview": "Road segment inspection summary. Road name: ELMSIDE VILLAGE LN. Road class: Residential. Speed limit: 25 mph. Length km: 0.013259864642821393. Scan status: scheduled. PCI score: unknown. PCI category:",
+          "is_relevant": true
+        },
+        {
+          "rank": 3,
+          "doc_id": "location-3236",
+          "source": "locations",
+          "score": 0.9898,
+          "dense_score": 0.0,
+          "sparse_score": 0.2405,
+          "road_name": "ELMSIDE VILLAGE LN",
+          "pci": null,
+          "preview": "Inspection location record. Road name: ELMSIDE VILLAGE LN. Capture name: GX010253_time_7_00590. Longitude: -84.2502820833. Latitude: 33.9548008889. Observed defects: none.",
+          "is_relevant": true
+        },
+        {
+          "rank": 4,
+          "doc_id": "location-15213",
+          "source": "locations",
+          "score": 0.9898,
+          "dense_score": 0.0,
+          "sparse_score": 0.2405,
+          "road_name": "ELMSIDE VILLAGE LN",
+          "pci": null,
+          "preview": "Inspection location record. Road name: ELMSIDE VILLAGE LN. Capture name: GX030253_time_5_00360. Longitude: -84.2504546944. Latitude: 33.954743. Observed defects: none.",
+          "is_relevant": true
+        },
+        {
+          "rank": 5,
+          "doc_id": "location-3235",
+          "source": "locations",
+          "score": 0.9898,
+          "dense_score": 0.0,
+          "sparse_score": 0.2405,
+          "road_name": "ELMSIDE VILLAGE LN",
+          "pci": null,
+          "preview": "Inspection location record. Road name: ELMSIDE VILLAGE LN. Capture name: GX010253_time_7_00550. Longitude: -84.250167. Latitude: 33.9547601944. Observed defects: none.",
+          "is_relevant": true
+        },
+        {
+          "rank": 6,
+          "doc_id": "location-15212",
+          "source": "locations",
+          "score": 0.986,
+          "dense_score": 0.0,
+          "sparse_score": 0.2396,
+          "road_name": "ELMSIDE VILLAGE LN",
+          "pci": null,
+          "preview": "Inspection location record. Road name: ELMSIDE VILLAGE LN. Capture name: GX030253_time_5_00320. Longitude: -84.2505813889. Latitude: 33.9547694722. Observed defects: longitudinal cracks: 1.",
+          "is_relevant": true
+        }
+      ]
+    },
+    {
+      "query_id": "Q4",
+      "query": "For roads with low PCI, what treatment guidance is suggested in the manual?",
+      "notes": "Cross-source retrieval should include structured evidence and manual guidance.",
+      "precision_at_k": 0.6667,
+      "recall_at_k": 0.0235,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_k": 0.5896,
+      "failure_modes": [
+        "missing_structured_evidence"
+      ],
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "manual-138-1",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 1.0,
+          "dense_score": 0.0,
+          "sparse_score": 0.0964,
+          "road_name": null,
+          "pci": null,
+          "preview": "t is no longer cost effective to  conduct grinding.   PSR (present serviceability rating): 5 (new) - 1 (extremely deteriorated condition).  Skid Resistance (f=Friction resistance /Load, unitless):  1)",
+          "is_relevant": false
+        },
+        {
+          "rank": 2,
+          "doc_id": "manual-14-4",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 0.9375,
+          "dense_score": 0.0,
+          "sparse_score": 0.0904,
+          "road_name": null,
+          "pci": null,
+          "preview": "................ 367  Figure 201. Photo. Home Page of PPIT Website........................................................................ 383  Figure 202. Photo. Asphalt Pavement Treatment Methods ..",
+          "is_relevant": true
+        },
+        {
+          "rank": 3,
+          "doc_id": "manual-400-0",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 0.9293,
+          "dense_score": 0.0,
+          "sparse_score": 0.0896,
+          "road_name": null,
+          "pci": null,
+          "preview": "384    \u2022 Figure 202 shows the introduction of the asphalt pavement treatment methods, including chip  seal, crack sealing, fog seal, micro-milling, micro-surfacing, thin overlay, white topping,  potho",
+          "is_relevant": true
+        },
+        {
+          "rank": 4,
+          "doc_id": "manual-384-0",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 0.9018,
+          "dense_score": 0.0,
+          "sparse_score": 0.087,
+          "road_name": null,
+          "pci": null,
+          "preview": "368    lost. The treatment is also effective on medium raveling conditions in which the treatment  reduces the amount of aggregate lost by 38-65%, depending on temperature. For light raveling  conditi",
+          "is_relevant": true
+        },
+        {
+          "rank": 5,
+          "doc_id": "manual-398-0",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 0.8811,
+          "dense_score": 0.0,
+          "sparse_score": 0.085,
+          "road_name": null,
+          "pci": null,
+          "preview": "382    APPENDIX A. USER TUTORIAL OF THE PAVEMENT  PRESERVATION INTERACTIVE TOOL (PPIT)  PPIT INTRODUCTION  This project developed the first version of the comprehensive pavement preservation guide alo",
+          "is_relevant": true
+        },
+        {
+          "rank": 6,
+          "doc_id": "manual-193-1",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 0.8738,
+          "dense_score": 0.0,
+          "sparse_score": 0.0843,
+          "road_name": null,
+          "pci": null,
+          "preview": "raffic rural roads, and 78% perform it on their  high-traffic urban roads (Peshkin et al. 2011).  The general recommendation for pavements initially sealed at the time of construction is that the  joi",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "Q5",
+      "query": "Compare defect patterns between ENGINEERING DR and GOLDEN LEAF TRL.",
+      "notes": "Multi-road comparison requires both roads in retrieval results.",
+      "precision_at_k": 1.0,
+      "recall_at_k": 0.0385,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "failure_modes": [
+        "missing_structured_evidence",
+        "low_retrieval_confidence_gap"
+      ],
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "location-16861",
+          "source": "locations",
+          "score": 1.0,
+          "dense_score": 0.0,
+          "sparse_score": 0.2824,
+          "road_name": "GOLDEN LEAF TRL",
+          "pci": null,
+          "preview": "Inspection location record. Road name: GOLDEN LEAF TRL. Capture name: GX015447_time_5_00350. Longitude: -84.2241613889. Latitude: 33.9804670833. Observed defects: block cracks: 1.",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "location-16849",
+          "source": "locations",
+          "score": 1.0,
+          "dense_score": 0.0,
+          "sparse_score": 0.2824,
+          "road_name": "GOLDEN LEAF TRL",
+          "pci": null,
+          "preview": "Inspection location record. Road name: GOLDEN LEAF TRL. Capture name: GX015447_time_4_01130. Longitude: -84.2247832778. Latitude: 33.9804650833. Observed defects: block cracks: 1.",
+          "is_relevant": true
+        },
+        {
+          "rank": 3,
+          "doc_id": "location-16840",
+          "source": "locations",
+          "score": 1.0,
+          "dense_score": 0.0,
+          "sparse_score": 0.2824,
+          "road_name": "GOLDEN LEAF TRL",
+          "pci": null,
+          "preview": "Inspection location record. Road name: GOLDEN LEAF TRL. Capture name: GX015447_time_4_00950. Longitude: -84.2258499722. Latitude: 33.9804328889. Observed defects: block cracks: 1.",
+          "is_relevant": true
+        },
+        {
+          "rank": 4,
+          "doc_id": "location-16841",
+          "source": "locations",
+          "score": 1.0,
+          "dense_score": 0.0,
+          "sparse_score": 0.2824,
+          "road_name": "GOLDEN LEAF TRL",
+          "pci": null,
+          "preview": "Inspection location record. Road name: GOLDEN LEAF TRL. Capture name: GX015447_time_4_00970. Longitude: -84.225734. Latitude: 33.9804648889. Observed defects: block cracks: 1.",
+          "is_relevant": true
+        },
+        {
+          "rank": 5,
+          "doc_id": "location-16842",
+          "source": "locations",
+          "score": 1.0,
+          "dense_score": 0.0,
+          "sparse_score": 0.2824,
+          "road_name": "GOLDEN LEAF TRL",
+          "pci": null,
+          "preview": "Inspection location record. Road name: GOLDEN LEAF TRL. Capture name: GX015447_time_4_00990. Longitude: -84.2256190833. Latitude: 33.9804956944. Observed defects: block cracks: 1.",
+          "is_relevant": true
+        },
+        {
+          "rank": 6,
+          "doc_id": "location-16844",
+          "source": "locations",
+          "score": 1.0,
+          "dense_score": 0.0,
+          "sparse_score": 0.2824,
+          "road_name": "GOLDEN LEAF TRL",
+          "pci": null,
+          "preview": "Inspection location record. Road name: GOLDEN LEAF TRL. Capture name: GX015447_time_4_01030. Longitude: -84.2253858889. Latitude: 33.9805314722. Observed defects: block cracks: 1.",
+          "is_relevant": true
+        }
+      ]
+    },
+    {
+      "query_id": "Q6",
+      "query": "Which defects should trigger preventive maintenance instead of reconstruction?",
+      "notes": "Manual-heavy conceptual question.",
+      "precision_at_k": 0.8333,
+      "recall_at_k": 0.061,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 0.8829,
+      "failure_modes": [],
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "manual-30-0",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 1.0,
+          "dense_score": 0.0,
+          "sparse_score": 0.1055,
+          "road_name": null,
+          "pci": null,
+          "preview": "14    weather and is widely used on Georgia\u2019s interstate highways. For OGFC and PEM under heavy  traffic conditions, raveling, which is the dislodging of coarse aggregates, becomes the major type  of ",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "manual-138-0",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 0.865,
+          "dense_score": 0.0,
+          "sparse_score": 0.0912,
+          "road_name": null,
+          "pci": null,
+          "preview": "122    Also, if load transfer is deficient on the pavement, the pavement should be restored with dowel  bar retrofit or undersealing first before diamond grinding is conducted. If not, the faulting  p",
+          "is_relevant": true
+        },
+        {
+          "rank": 3,
+          "doc_id": "manual-52-0",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 0.7408,
+          "dense_score": 0.0,
+          "sparse_score": 0.0781,
+          "road_name": null,
+          "pci": null,
+          "preview": "36    Geotextile-Reinforced Seal:  For this type of seal, a layer of geotextile product is placed on the existing pavement prior to the  application of a single chip seal. It is used to enhance the pe",
+          "is_relevant": true
+        },
+        {
+          "rank": 4,
+          "doc_id": "manual-456-0",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 0.7288,
+          "dense_score": 0.0,
+          "sparse_score": 0.0769,
+          "road_name": null,
+          "pci": null,
+          "preview": "440    PAVEMENT MAINTENANCE AND REHABILITATION CRITERIA  The following decision tree shows the asphalt pavement maintenance and rehabilitation criteria  based on COAPCES rating, distress deduct values",
+          "is_relevant": true
+        },
+        {
+          "rank": 5,
+          "doc_id": "manual-143-0",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 0.6764,
+          "dense_score": 0.0,
+          "sparse_score": 0.0713,
+          "road_name": null,
+          "pci": null,
+          "preview": "127    Table 16. Typical Grinding Texture for Different Aggregates (ACPA, 2006, InDOT, 2010)    Table 17. Typical values for diamond grinding design in California (Caltrans, 2007)    Construction Proc",
+          "is_relevant": false
+        },
+        {
+          "rank": 6,
+          "doc_id": "manual-41-0",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 0.6749,
+          "dense_score": 0.0,
+          "sparse_score": 0.0712,
+          "road_name": null,
+          "pci": null,
+          "preview": "25    Table 3. Characteristic of Crack seanling and filling.  Advantages Disadvantages  \u2022 Reduce water infiltration  \u2022 Decrease further crack deterioration (e.g., spalling at crack)  \u2022 Reduce or delay",
+          "is_relevant": true
+        }
+      ]
+    },
+    {
+      "query_id": "Q7",
+      "query": "What evidence suggests urgent intervention on GREEN POINTE PKWY?",
+      "notes": "Road-specific urgency check grounded in inspection signals.",
+      "precision_at_k": 1.0,
+      "recall_at_k": 0.0541,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_k": 1.0,
+      "failure_modes": [
+        "missing_structured_evidence",
+        "low_retrieval_confidence_gap"
+      ],
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "location-3666",
+          "source": "locations",
+          "score": 1.0,
+          "dense_score": 0.0,
+          "sparse_score": 0.2545,
+          "road_name": "GREEN POINTE PKWY",
+          "pci": null,
+          "preview": "Inspection location record. Road name: GREEN POINTE PKWY. Capture name: GX010258_time_2_00740. Longitude: -84.2565810833. Latitude: 33.9390585833. Observed defects: none.",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "location-3631",
+          "source": "locations",
+          "score": 1.0,
+          "dense_score": 0.0,
+          "sparse_score": 0.2545,
+          "road_name": "GREEN POINTE PKWY",
+          "pci": null,
+          "preview": "Inspection location record. Road name: GREEN POINTE PKWY. Capture name: GX010258_time_1_00590. Longitude: -84.2569361944. Latitude: 33.9391700833. Observed defects: none.",
+          "is_relevant": true
+        },
+        {
+          "rank": 3,
+          "doc_id": "location-3671",
+          "source": "locations",
+          "score": 0.9987,
+          "dense_score": 0.0,
+          "sparse_score": 0.2542,
+          "road_name": "GREEN POINTE PKWY",
+          "pci": null,
+          "preview": "Inspection location record. Road name: GREEN POINTE PKWY. Capture name: GX010258_time_3_00840. Longitude: -84.2616997778. Latitude: 33.9458123889. Observed defects: longitudinal cracks: 2, transverse ",
+          "is_relevant": true
+        },
+        {
+          "rank": 4,
+          "doc_id": "location-3633",
+          "source": "locations",
+          "score": 0.9961,
+          "dense_score": 0.0,
+          "sparse_score": 0.2535,
+          "road_name": "GREEN POINTE PKWY",
+          "pci": null,
+          "preview": "Inspection location record. Road name: GREEN POINTE PKWY. Capture name: GX010258_time_1_00610. Longitude: -84.2567640833. Latitude: 33.9390468889. Observed defects: longitudinal cracks: 5.",
+          "is_relevant": true
+        },
+        {
+          "rank": 5,
+          "doc_id": "location-3577",
+          "source": "locations",
+          "score": 0.9961,
+          "dense_score": 0.0,
+          "sparse_score": 0.2535,
+          "road_name": "GREEN POINTE PKWY",
+          "pci": null,
+          "preview": "Inspection location record. Road name: GREEN POINTE PKWY. Capture name: GX010258_time_0_00730. Longitude: -84.2619005833. Latitude: 33.9446077778. Observed defects: longitudinal cracks: 5.",
+          "is_relevant": true
+        },
+        {
+          "rank": 6,
+          "doc_id": "location-3581",
+          "source": "locations",
+          "score": 0.9961,
+          "dense_score": 0.0,
+          "sparse_score": 0.2535,
+          "road_name": "GREEN POINTE PKWY",
+          "pci": null,
+          "preview": "Inspection location record. Road name: GREEN POINTE PKWY. Capture name: GX010258_time_0_00810. Longitude: -84.2615322778. Latitude: 33.9440433889. Observed defects: longitudinal cracks: 3.",
+          "is_relevant": true
+        }
+      ]
+    },
+    {
+      "query_id": "Q8",
+      "query": "How can we justify maintenance decisions with traceable sources?",
+      "notes": "Transparency-focused retrieval across structured + unstructured sources.",
+      "precision_at_k": 0.1667,
+      "recall_at_k": 0.1429,
+      "reciprocal_rank": 0.25,
+      "ndcg_at_k": 0.1303,
+      "failure_modes": [
+        "missing_structured_evidence"
+      ],
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "manual-222-1",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 1.0,
+          "dense_score": 0.0,
+          "sparse_score": 0.1991,
+          "road_name": null,
+          "pci": null,
+          "preview": "ement thickness, traffic volume) to determine the crack sealing optimal timing.  \u2022 Verifying that crack sealing effectiveness is better at higher COPACES ratings (such as a  rating of 90) to support n",
+          "is_relevant": false
+        },
+        {
+          "rank": 2,
+          "doc_id": "manual-456-0",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 0.4315,
+          "dense_score": 0.0,
+          "sparse_score": 0.0859,
+          "road_name": null,
+          "pci": null,
+          "preview": "440    PAVEMENT MAINTENANCE AND REHABILITATION CRITERIA  The following decision tree shows the asphalt pavement maintenance and rehabilitation criteria  based on COAPCES rating, distress deduct values",
+          "is_relevant": false
+        },
+        {
+          "rank": 3,
+          "doc_id": "manual-464-1",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 0.3403,
+          "dense_score": 0.0,
+          "sparse_score": 0.0677,
+          "road_name": null,
+          "pci": null,
+          "preview": "http://dx.doi.org/10.5703/1288284316008  Maintenance, C. D. o. (2008). \"Rigid Pavement Preservation 2nd Edition\".  McGhee, K. H. 1995. Design, Construction, and Maintenance of PCC Pavement Joints. NCH",
+          "is_relevant": false
+        },
+        {
+          "rank": 4,
+          "doc_id": "manual-30-0",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 0.2965,
+          "dense_score": 0.0,
+          "sparse_score": 0.059,
+          "road_name": null,
+          "pci": null,
+          "preview": "14    weather and is widely used on Georgia\u2019s interstate highways. For OGFC and PEM under heavy  traffic conditions, raveling, which is the dislodging of coarse aggregates, becomes the major type  of ",
+          "is_relevant": true
+        },
+        {
+          "rank": 5,
+          "doc_id": "manual-9-3",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 0.2638,
+          "dense_score": 0.0,
+          "sparse_score": 0.0525,
+          "road_name": null,
+          "pci": null,
+          "preview": "............................................................ 432  Determining Project Average for Each Distress ............................................................ 432  Examples .............",
+          "is_relevant": false
+        },
+        {
+          "rank": 6,
+          "doc_id": "manual-219-0",
+          "source": "GDOT PAVEMENT PRESERVATION GUIDE (1) (1).pdf",
+          "score": 0.23,
+          "dense_score": 0.0,
+          "sparse_score": 0.0458,
+          "road_name": null,
+          "pci": null,
+          "preview": "203    CHAPTER 5.  CRACK SEALING EFFECTIVENESS  STUDY USING 3D LASER TECHNOLOGY  INTRODUCTION  Crack sealing is the most common asphalt pavement preservation method used by many  departments of transp",
+          "is_relevant": false
+        }
+      ]
+    }
+  ]
+}

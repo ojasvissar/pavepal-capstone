@@ -1,0 +1,1 @@
+"""Pavepal assistant package."""
