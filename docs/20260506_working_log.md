@@ -57,6 +57,41 @@ Without severity, the system always has to hedge ("if Severity Level 1, then X; 
 
 ---
 
+## T1.1 - Contrast 4 types of more complex pages and assess parsing result
+
+- **Pages to use to assess:**
+GDOT Table 66 on page 390 in text, or page 407 out of 472. 
+
+Figure 203, the entire page 386 in text or page 403 out of 472
+
+Figure 202, photo, Asphalt Pavement Treatment Methods, page 384 in text, page 401 out of 472
+
+Figure 199, Graoh Effectiveness of Fog Seal xyz, text page 366, or 384 out of 472 
+
+- **What is expected:** 
+Table 66 should use pdfplumber.extract_table() -> markdown
+Figure 199, Figure 202, Figure 203 will all use Vision LLM 
+
+The Vision LLM workflow:
+
+
+Page 384 (PDF)
+  ↓ render to image (pdf2image or PyMuPDF .get_pixmap())
+PNG of page 384
+  ↓ send to Gemini 2.5 Pro with prompt:
+    "Describe this figure for a search index. If it is a graph,
+     state the title, axes, and the key trend or takeaway in 2-3
+     sentences. Output plain text."
+  ↓ Gemini response
+"Figure 199, page 366: graph titled 'Effectiveness of Fog Seal.'
+ X-axis = years post-treatment, Y-axis = PCI. The treated curve
+ stays above the untreated curve for ~5 years before converging."
+  ↓ store as a chunk with metadata {page: 384, source_type: "vision_caption"}
+That generated description is then just another chunk — embedded by BGE, tokenized into BM25, retrieved by RRF like everything else. The pipeline downstream doesn't know it came from a graph.
+
+
+
+
 ## T2 — Verify the BGE query prefix is actually applied
 
 - **Status:** Open
