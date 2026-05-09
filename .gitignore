@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Pipeline build artifacts
+index/
+logs/
+.env
+
+# Notebook executions (the .ipynb without .executed is the source of truth)
+notebooks/*.executed.ipynb
+
+# OS
+.DS_Store
+
+# Conda envs (if checked out locally)
+.conda/
